@@ -1,0 +1,41 @@
+################################################################################
+# Node-RED Stack or Compose
+################################################################################
+# docker stack deploy node-red --compose-file docker-compose-node-red.yml
+# docker-compose -f docker-compose-node-red.yml -p myNoderedProject up
+################################################################################
+version: "3"
+
+services:
+  node-red:
+    build: .
+    #image: nodered/node-red:latest
+    environment:
+      - TZ=Europe/London
+    ports:
+      - "1880:1880"
+    networks:
+      - node-red-net
+    volumes:
+      - node-red-data    
+    depends_on:
+      - mqtt-broker
+  
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      #- ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/log:/mosquitto/log
+      - ./mosquitto/data:/mosquitto/data
+    networks:
+      - node-red-net      
+
+
+volumes:
+  node-red-data:
+
+networks:
+  node-red-net:
